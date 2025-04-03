@@ -77,7 +77,7 @@ export default async function CustomerDetailsPage({
           </Link>
           {/* Delete button (currently non-functional) 
              TODO: Implement delete functionality with confirmation dialog */}
-          <Button variant="destructive" size="icon">
+          <Button variant="destructive">
             Delete
           </Button>
         </div>
