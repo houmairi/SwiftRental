@@ -1,3 +1,31 @@
+/**
+ * Dashboard Page Component
+ * 
+ * This component serves as the main entry point for the SwiftRental admin dashboard.
+ * It provides a high-level overview of key business metrics and quick access to main
+ * system functionalities.
+ * 
+ * Data Flow:
+ * - Uses direct Prisma queries to fetch real-time statistics from the database
+ * - All database operations are performed server-side during page rendering
+ * - No client-side data fetching is used, leveraging Next.js server components
+ * 
+ * Design Patterns:
+ * - Follows a dashboard pattern with statistics cards and recent activity
+ * - Uses composition with reusable UI components from the component library
+ * - Implements a responsive grid layout for different screen sizes
+ * 
+ * Performance Considerations:
+ * - Count operations on large tables should be monitored as the database grows
+ * - Consider implementing caching for statistics that don't need real-time updates
+ * - If database grows significantly, pagination or virtual scrolling should be added for recent customers
+ * 
+ * Future Improvements:
+ * - Add data visualization charts for rental trends over time
+ * - Implement real-time updates using websockets for active rentals
+ * - Add filtering options for different time periods (daily, weekly, monthly statistics)
+ * - Consider implementing server-side caching for frequently accessed metrics
+ */
 
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
@@ -6,14 +34,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 
 export default async function Dashboard() {
-  // Fetch stats
+  // Fetch count statistics for key metrics
+  // These queries execute in parallel since they're independent
   const customerCount = await prisma.customer.count();
   const carCount = await prisma.car.count();
   const activeRentalsCount = await prisma.rental.count({
     where: { status: 'ACTIVE' },
   });
   
-  // Fetch recent customers
+  // Fetch recent customers for the activity feed
+  // Limited to 5 records to prevent performance issues
   const recentCustomers = await prisma.customer.findMany({
     take: 5,
     orderBy: {
@@ -23,6 +53,7 @@ export default async function Dashboard() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      {/* Header section with page title and primary action */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <Link href="/dashboard/customers/new">
@@ -30,7 +61,8 @@ export default async function Dashboard() {
         </Link>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards Section - Key metrics display
+         Responsive grid layout that stacks on mobile and displays in a row on larger screens */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
@@ -63,7 +95,8 @@ export default async function Dashboard() {
         </Card>
       </div>
 
-      {/* Recent Customers */}
+      {/* Recent Customers Section - Activity feed showing latest registrations 
+         Provides quick access to detailed customer information */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Customers</CardTitle>
@@ -93,7 +126,8 @@ export default async function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* Quick Actions */}
+      {/* Quick Actions Section - Navigation shortcuts to main system areas
+         Provides context-based navigation to essential business functions */}
       <div className="flex gap-4">
         <Link href="/dashboard/customers">
           <Button variant="outline">Manage Customers</Button>
