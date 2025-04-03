@@ -4,65 +4,72 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// Generator block - defines what client should be generated from this schema
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js"  // Generates JavaScript/TypeScript client
 }
 
+// Datasource block - configures the database connection
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"        // Database type (PostgreSQL in this case)
+  url      = env("DATABASE_URL") // Connection string from environment variable
 }
 
+// Model definition for Customer entity
 model Customer {
-  id         Int      @id @default(autoincrement())
-  firstName  String
-  lastName   String
-  email      String   @unique
-  phone      String?
-  address    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  rentals    Rental[]
+  id         Int      @id @default(autoincrement())  // Primary key with auto-increment
+  firstName  String                                  // Required string field
+  lastName   String                                  // Required string field
+  email      String   @unique                        // Required string with unique constraint
+  phone      String?                                 // Optional string field (nullable)
+  address    String?                                 // Optional string field (nullable)
+  createdAt  DateTime @default(now())                // Timestamp with default current time
+  updatedAt  DateTime @updatedAt                     // Timestamp that auto-updates on record changes
+  rentals    Rental[]                                // One-to-many relation to Rental model
 }
 
+// Model definition for Car entity
 model Car {
-  id              Int      @id @default(autoincrement())
-  brand           String
-  model           String
-  year            Int
-  licensePlate    String   @unique
-  color           String?
-  mileage         Int      @default(0)
-  status          CarStatus @default(AVAILABLE)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  rentals         Rental[]
+  id              Int      @id @default(autoincrement())  // Primary key with auto-increment
+  brand           String                                  // Required string field
+  model           String                                  // Required string field
+  year            Int                                     // Required integer field
+  licensePlate    String   @unique                        // Required string with unique constraint
+  color           String?                                 // Optional string field
+  mileage         Int      @default(0)                    // Integer with default value of 0
+  status          CarStatus @default(AVAILABLE)           // Enum field with default value
+  createdAt       DateTime @default(now())                // Timestamp with default current time
+  updatedAt       DateTime @updatedAt                     // Timestamp that auto-updates on record changes
+  rentals         Rental[]                                // One-to-many relation to Rental model
 }
 
+// Model definition for Rental entity (join table with additional fields)
 model Rental {
-  id              Int          @id @default(autoincrement())
-  customer        Customer     @relation(fields: [customerId], references: [id])
-  customerId      Int
-  car             Car          @relation(fields: [carId], references: [id])
-  carId           Int
-  startDate       DateTime     @default(now())
-  endDate         DateTime?
-  startMileage    Int
-  endMileage      Int?
-  status          RentalStatus @default(ACTIVE)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id              Int          @id @default(autoincrement())  // Primary key with auto-increment
+  customer        Customer     @relation(fields: [customerId], references: [id])  // Relation to Customer model
+  customerId      Int                                          // Foreign key to Customer table
+  car             Car          @relation(fields: [carId], references: [id])       // Relation to Car model
+  carId           Int                                          // Foreign key to Car table
+  startDate       DateTime     @default(now())                 // Timestamp with default current time
+  endDate         DateTime?                                    // Optional timestamp (for active rentals)
+  startMileage    Int                                          // Required integer field
+  endMileage      Int?                                         // Optional integer field (for active rentals)
+  status          RentalStatus @default(ACTIVE)                // Enum field with default value
+  createdAt       DateTime     @default(now())                 // Timestamp with default current time
+  updatedAt       DateTime     @updatedAt                      // Timestamp that auto-updates on record changes
 }
 
+// Enum definition for car status values
 enum CarStatus {
-  AVAILABLE
-  RENTED
-  MAINTENANCE
-  UNAVAILABLE
+  AVAILABLE     // Car is available for rental
+  RENTED        // Car is currently rented
+  MAINTENANCE   // Car is under maintenance
+  UNAVAILABLE   // Car is unavailable for other reasons
 }
 
+// Enum definition for rental status values
 enum RentalStatus {
-  ACTIVE
-  COMPLETED
-  CANCELLED
+  ACTIVE        // Rental is ongoing
+  COMPLETED     // Rental has been completed
+  CANCELLED     // Rental was cancelled
 }

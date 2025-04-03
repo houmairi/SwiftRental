@@ -12,7 +12,8 @@
 | 6 | **Rental Management** | ⏳ Partially Complete | Schema only |
 | 7 | **Dashboard Development** | ⏳ Partially Complete | Basic layout only |
 | 8 | **Authentication Integration** | ⏳ Partially Complete | Dependencies only |
-| 9 | **Documentation Creation** | ✅ Completed | Hour 4+ |
+| 9 | **Testing** | Not Started | Idea only |
+| 10 | **Documentation Creation** | ✅ Completed | Hour 4+ |
 
 ## Detailed Description of Task Packages
 
